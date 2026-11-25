@@ -17,13 +17,14 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #EAF1F7; }
   body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); }
-  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: manipulation; }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: manipulation;
+           -webkit-tap-highlight-color: transparent; }
 
   /* Dialog yang melayang di atas grafis */
   .panel {
     position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
     max-width: 560px; margin: 0 auto; padding: 18px 20px 20px;
-    background: rgba(255,255,255,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    background: #FFFFFF;
     border-radius: 20px; box-shadow: 0 12px 40px rgba(30,42,54,.18);
   }
   @media (min-width: 900px) { .panel { left: 32px; right: auto; bottom: 32px; width: 400px; margin: 0; padding: 22px 24px 24px; } }
@@ -35,7 +36,12 @@
   .dot.now { background: #9DBBF7; }
   .panel h2 { margin: 0 0 8px; font-size: 22px; }
   .panel p { margin: 0; font-size: 17px; line-height: 1.5; }
-  .tap { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 12px 14px; border-radius: 12px;
+  .row { display: flex; gap: 8px; margin-top: 14px; }
+  #btnAuto { flex: none; font: inherit; font-weight: 700; font-size: 15px; border: 0; border-radius: 12px; padding: 0 14px;
+             background: #EEF1F4; color: var(--ink); cursor: pointer; white-space: nowrap; }
+  #btnAuto.on { background: var(--ink); color: #fff; }
+  .finished .row { display: none; }
+  .tap { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px;
          background: #E7EEFD; color: var(--accent); font-weight: 700; font-size: 16px; }
   .tap::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
                  animation: blink 1.4s ease-out infinite; }
@@ -47,7 +53,6 @@
   #btnAgain { display: none; margin-top: 14px; width: 100%; font: inherit; font-weight: 700; font-size: 16px; border: 0; border-radius: 12px;
               padding: 13px; background: var(--accent); color: #fff; cursor: pointer; }
   .finished #btnAgain { display: block; }
-  .finished .tap { display: none; }
   @media (max-width: 600px) {
     .panel { padding: 14px 16px 16px; border-radius: 18px; }
     .panel h2 { font-size: 20px; }
@@ -58,7 +63,8 @@
   .hot { fill: rgba(47,111,237,.12); stroke: var(--accent); stroke-width: 3; opacity: 0; pointer-events: none; cursor: pointer; transform-box: fill-box; transform-origin: center; }
   #scene.at1:not(.d1) #hot1, #scene.at2:not(.d2) #hot2, #scene.at3:not(.d3) #hot3,
   #scene.at4:not(.d4) #hot4, #scene.at5:not(.d5) #hot5, #scene.at6:not(.d6) #hot6,
-  #scene.at7:not(.d7) #hot7, #scene.at8:not(.d8) #hot8, #scene.at9:not(.d9) #hot9 {
+  #scene.at7:not(.d7) #hot7, #scene.at8:not(.d8) #hot8, #scene.at9:not(.d9) #hot9,
+  #scene.at10:not(.d10) #hot10, #scene.at11:not(.d11) #hot11 {
     opacity: 1; pointer-events: all; animation: pulse 1.4s ease-out infinite;
   }
   @keyframes pulse { 0% { transform: scale(.85); opacity: 1; } 100% { transform: scale(1.35); opacity: 0; } }
@@ -113,16 +119,30 @@
 
   /* 7. Start */
   .startbtn { transition: fill .3s; }
-  #scene.d9 .startbtn { fill: #22B07D; }
+  #scene.washing .startbtn { fill: #22B07D; }
   .water { transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); transition: transform 2.5s ease-out; }
-  #scene.d9 .water { transform: scaleY(1); }
+  #scene.washing .water { transform: scaleY(1); }
   .clothes { transform-box: view-box; transform-origin: 495px 300px; }
-  #scene.d9 .clothes { animation: spin 1.6s linear infinite; }
+  #scene.washing .clothes { animation: spin 1.6s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .bubble { opacity: 0; }
-  #scene.d9 .bubble { animation: rise 2s ease-in infinite; }
-  #scene.d9 .bubble:nth-of-type(2) { animation-delay: .6s; }
-  #scene.d9 .bubble:nth-of-type(3) { animation-delay: 1.2s; }
+  #scene.washing .bubble { animation: rise 2s ease-in infinite; }
+  #scene.washing .bubble:nth-of-type(2) { animation-delay: .6s; }
+  #scene.washing .bubble:nth-of-type(3) { animation-delay: 1.2s; }
+
+  /* 10. Keluarkan pakaian */
+  #scene.d10 .door { transform: scaleX(.14); transition-delay: 0s; }
+  #scene.d10 .clothes-in { opacity: 0; transform: translateX(-40px); transition-delay: .6s; }
+  .basket { opacity: 0; transition: opacity .4s; }
+  #scene.at10 .basket, #scene.at11 .basket, #scene.at12 .basket { opacity: 1; }
+  .basket-clothes { opacity: 0; transform: translateY(-30px); transition: opacity .4s, transform .5s; }
+  #scene.d10 .basket-clothes { opacity: 1; transform: none; transition-delay: 1s; }
+
+  /* 11. Tutup keran */
+  #scene.d11 .lever { transform: none; }
+  #scene.d11 .hose-water { opacity: 0; }
+  .turn-back { opacity: 0; transition: opacity .3s; }
+  #scene.at11:not(.d11) .turn-back { opacity: 1; }
   @keyframes rise { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: .9; } 100% { opacity: 0; transform: translateY(-50px); } }
 
   @media (prefers-reduced-motion: reduce) {
@@ -148,9 +168,6 @@
           <stop offset="0" stop-color="#FAFBFC"/><stop offset="1" stop-color="#A9B5C0"/>
         </radialGradient>
         <clipPath id="glass"><circle cx="495" cy="300" r="72"/></clipPath>
-        <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
-          <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1E2A36" flood-opacity=".15"/>
-        </filter>
       </defs>
 
       <!-- Ruangan -->
@@ -177,13 +194,15 @@
       <circle cx="250" cy="92" r="6" fill="url(#chrome)" stroke="#8C99A6" stroke-width="1"/>
       <path class="turn-hint" d="M258 138 A47 47 0 0 0 296 100" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
       <path class="turn-hint" d="M258 138 A47 47 0 0 0 296 100" fill="none" stroke="#2F6FED" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <path class="turn-back" d="M296 100 A47 47 0 0 1 258 138" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+      <path class="turn-back" d="M296 100 A47 47 0 0 1 258 138" fill="none" stroke="#2F6FED" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
       <circle id="hot1" class="hot" cx="250" cy="100" r="38"/>
+      <circle id="hot11" class="hot" cx="250" cy="100" r="38"/>
       <text x="218" y="146" text-anchor="end" font-size="12" fill="#5B6B7B">Keran air</text>
 
       <!-- Mesin cuci -->
-      <g filter="url(#shadow)">
-        <rect x="330" y="90" width="330" height="345" rx="20" fill="#F7F9FB" stroke="#C9D3DD" stroke-width="2"/>
-      </g>
+      <rect x="333" y="96" width="330" height="345" rx="20" fill="#1E2A36" opacity=".08"/>
+      <rect x="330" y="90" width="330" height="345" rx="20" fill="#F7F9FB" stroke="#C9D3DD" stroke-width="2"/>
       <rect x="340" y="433" width="30" height="10" rx="3" fill="#9AA8B6"/>
       <rect x="620" y="433" width="30" height="10" rx="3" fill="#9AA8B6"/>
       <path d="M332 175 H658" stroke="#D5DDE5" stroke-width="2"/>
@@ -249,11 +268,28 @@
         <rect x="585" y="285" width="10" height="30" rx="5" fill="#B8C4CF"/>
       </g>
       <circle id="hot2" class="hot" cx="495" cy="300" r="60"/>
+      <circle id="hot10" class="hot" cx="495" cy="300" r="60"/>
+
+      <!-- Keranjang cucian -->
+      <g class="basket">
+        <g class="basket-clothes">
+          <ellipse cx="172" cy="402" rx="24" ry="11" fill="#E05A4F"/>
+          <ellipse cx="212" cy="398" rx="26" ry="12" fill="#F5C04A"/>
+          <ellipse cx="190" cy="392" rx="20" ry="10" fill="#5DBB8A"/>
+          <ellipse cx="228" cy="390" rx="14" ry="9" fill="#8A6FE0"/>
+        </g>
+        <path d="M138 402 L262 402 L250 446 L150 446 Z" fill="#C9A47E"/>
+        <rect x="134" y="398" width="132" height="9" rx="4" fill="#B48A60"/>
+        <g stroke="#B48A60" stroke-width="2">
+          <line x1="144" y1="418" x2="257" y2="418"/><line x1="147" y1="432" x2="253" y2="432"/>
+        </g>
+      </g>
 
       <!-- Inset: laci tampak atas -->
       <g class="inset">
         <line x1="310" y1="200" x2="348" y2="140" stroke="#2F6FED" stroke-width="2" stroke-dasharray="5 5"/>
-        <rect x="20" y="170" width="290" height="250" rx="16" fill="#FFFFFF" stroke="#C9D3DD" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="23" y="176" width="290" height="250" rx="16" fill="#1E2A36" opacity=".08"/>
+        <rect x="20" y="170" width="290" height="250" rx="16" fill="#FFFFFF" stroke="#C9D3DD" stroke-width="2"/>
         <text x="36" y="194" font-size="13" font-weight="700" fill="#1E2A36">Laci deterjen (dilihat dari atas)</text>
 
         <!-- sekat -->
@@ -304,7 +340,10 @@
     <div class="dots" id="dots"></div>
     <h2 id="title"></h2>
     <p id="desc"></p>
-    <div class="tap" id="tap"></div>
+    <div class="row">
+      <div class="tap" id="tap"></div>
+      <button id="btnAuto">Putar otomatis</button>
+    </div>
     <button id="btnAgain">Ulangi dari awal</button>
   </aside>
 
@@ -318,20 +357,22 @@ const steps = [
   { title: 'Dorong laci',         desc: 'Dorong laci sampai tertutup.',                                tap: 'Ketuk laci' },
   { title: 'Pilih Mix',           desc: 'Putar tombol bulat ke kiri sampai menunjuk Mix.',             tap: 'Ketuk tombol bulat' },
   { title: 'Atur suhu',           desc: 'Tekan Suhu sampai layar menunjukkan -- (air dingin).',        tap: 'Ketuk tombol Suhu' },
-  { title: 'Mulai',               desc: 'Tekan tombol biru. Mesin mulai mencuci.',                     tap: 'Ketuk tombol biru' },
+  { title: 'Mulai',               desc: 'Tekan tombol biru, lalu tunggu sampai mesin berhenti.',       tap: 'Ketuk tombol biru', busy: 'Mesin sedang mencuci…' },
+  { title: 'Keluarkan pakaian',   desc: 'Layar menunjukkan End. Buka pintu dan keluarkan pakaian.',    tap: 'Ketuk pintu mesin' },
+  { title: 'Tutup keran',         desc: 'Putar tuas merah kembali ke bawah.',                          tap: 'Ketuk tuas merah' },
 ];
 
 const scene = document.getElementById('scene');
 const $ = id => document.getElementById(id);
 const dispProg = $('dispProg'), dispMain = $('dispMain');
-let cur = 0;      // langkah yang sedang dibuka (0..8), 9 = selesai
+let cur = 0;      // langkah yang sedang dibuka (0..10), 11 = selesai
 let done = 0;     // jumlah langkah yang sudah dilakukan (otomatis lanjut setelah animasi)
 let busy = false;
-let timer = null;
+let auto = false;   // putar otomatis
 
 // Kamera: zoom ke area yang relevan tiap langkah supaya teks kecil tetap terbaca (terutama di HP)
 // Tiap langkah: [bingkai untuk layar lebar, bingkai untuk layar tegak/HP]
-const FULL = [[0, 0, 760, 520], [300, 60, 380, 400]];
+const FULL = [[0, 0, 760, 520], [125, 60, 545, 400]];
 const cams = [
   [[100, 20, 380, 260], [175, 35, 190, 210]],   // keran
   [[290, 180, 410, 281], [385, 185, 220, 230]],  // pintu
@@ -342,6 +383,8 @@ const cams = [
   [[400, 60, 270, 185], [440, 85, 215, 100]],   // kenop & layar
   [[400, 60, 270, 185], [440, 85, 215, 100]],
   [[250, 70, 480, 330], [385, 90, 270, 320]],   // start & pintu
+  [[120, 170, 520, 280], [130, 190, 480, 260]],  // keluarkan pakaian
+  [[100, 20, 380, 260], [175, 35, 190, 210]],    // tutup keran
 ];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const panel = $('panel');
@@ -356,16 +399,20 @@ function frameFor(box) {
   return [x + w / 2 - (fl + fw / 2) / k, y + h / 2 - (ft + fh / 2) / k, W / k, H / k];
 }
 let camBox = FULL, vb = frameFor(FULL), camAnim = null, animating = false;
+scene.setAttribute('viewBox', vb.join(' '));
+// Gerak kamera dengan menganimasikan viewBox. Tujuan dihitung sekali per perpindahan (tanpa baca layout tiap frame).
 function camTo(box, instant) {
+  if (box === camBox && !instant) return;
   camBox = box;
   cancelAnimationFrame(camAnim);
-  const from = vb.slice(), t0 = performance.now(), dur = (reduceMotion || instant) ? 0 : 700;
+  const from = vb.slice(), to = frameFor(box);
+  if (instant || reduceMotion) { vb = to; scene.setAttribute('viewBox', vb.join(' ')); animating = false; return; }
+  const t0 = performance.now(), dur = 800;
   animating = true;
   const step = now => {
-    const target = frameFor(camBox);   // dihitung ulang tiap frame: ikut berubah kalau tinggi dialog berubah
-    const p = dur ? Math.min(1, (now - t0) / dur) : 1;
-    const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-    vb = from.map((v, i) => v + (target[i] - v) * e);
+    const p = Math.min(1, (now - t0) / dur);
+    const e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+    vb = from.map((v, i) => v + (to[i] - v) * e);
     scene.setAttribute('viewBox', vb.join(' '));
     if (p < 1) camAnim = requestAnimationFrame(step); else animating = false;
   };
@@ -379,7 +426,7 @@ $('dots').innerHTML = steps.map(() => '<div class="dot"></div>').join('');
 function render() {
   const cls = ['at' + (cur + 1)];
   for (let i = 1; i <= done; i++) cls.push('d' + i);
-  if (scene.classList.contains('pour')) cls.push('pour');
+  for (const c of ['pour', 'washing']) if (scene.classList.contains(c)) cls.push(c);
   scene.setAttribute('class', cls.join(' '));
 
   document.querySelectorAll('.dot').forEach((d, i) => {
@@ -390,23 +437,26 @@ function render() {
   panel.classList.toggle('finished', finished);
   if (finished) {
     $('num').textContent = 'Selesai';
-    $('title').textContent = 'Mesin sedang mencuci';
-    $('desc').textContent = 'Setelah selesai, keluarkan cucian dan putar tuas keran kembali ke bawah.';
+    $('title').textContent = 'Cucian siap dijemur';
+    $('desc').textContent = 'Semua langkah sudah selesai.';
   } else {
     const s = steps[cur];
     $('num').textContent = `Langkah ${cur + 1} dari ${steps.length}`;
     $('title').textContent = s.title;
     $('desc').textContent = s.desc;
-    $('tap').textContent = busy ? 'Tunggu sebentar…' : s.tap;
+    $('tap').textContent = busy ? (s.busy || 'Tunggu sebentar…') : s.tap;
     $('tap').classList.toggle('wait', busy);
   }
   camTo(cams[cur] || FULL);   // setelah teks diganti, supaya tinggi dialog sudah benar
 
-  if (done < 9) {
-    clearInterval(timer); timer = null;
-    dispProg.textContent = done >= 7 ? 'MIX' : '';
-    if (!busy) dispMain.textContent = done < 7 ? '' : done >= 8 ? '--' : '40°';
-  }
+  $('btnAuto').textContent = auto ? 'Berhenti' : 'Putar otomatis';
+  $('btnAuto').classList.toggle('on', auto);
+  if (!busy) updateDisplay();
+}
+
+function updateDisplay() {
+  dispProg.textContent = done >= 7 ? 'MIX' : '';
+  dispMain.textContent = done < 7 ? '' : done < 8 ? '40°' : done < 9 ? '--' : 'End';
 }
 
 async function act() {
@@ -427,30 +477,35 @@ async function act() {
     for (const t of ['60°', '20°', '--']) { await wait(450); dispMain.textContent = t; }
     done = n;
   } else if (n === 9) {
+    done = n; scene.classList.add('washing'); render();
+    dispProg.textContent = 'MIX  --';
+    for (let m = 85; m >= 0; m -= 5) { dispMain.textContent = `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`; await wait(300); }
+    dispMain.textContent = 'End';
+    scene.classList.remove('washing'); render();
+    await wait(1800);
+  } else if (n === 10) {
     done = n; render();
-    startCountdown();
-    await wait(1500);
+    await wait(2000);
   } else {
     done = n; render();
+    updateDisplay();
     await wait(1000);
   }
   await wait(500);
   busy = false; cur++; render();
 }
 
-function startCountdown() {
-  let sec = 85 * 60;
-  dispProg.textContent = 'MIX  --';
-  const show = () => {
-    const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60;
-    dispMain.textContent = `${h}:${String(m).padStart(2, '0')}`;
-  };
-  show();
-  clearInterval(timer);
-  timer = setInterval(() => { sec -= 60; if (sec <= 0) clearInterval(timer); show(); }, 1000);
-}
+function reset() { if (busy) return; auto = false; cur = 0; done = 0; render(); }
 
-function reset() { if (busy) return; cur = 0; done = 0; render(); }
+async function autoplay() {
+  auto = !auto; render();
+  while (auto && cur < steps.length) {
+    if (!busy) { await wait(1200); if (!auto) break; await act(); }
+    else await wait(200);
+  }
+  auto = false; render();
+}
+$('btnAuto').onclick = autoplay;
 
 document.querySelectorAll('.hot').forEach(h => h.addEventListener('click', e => { e.stopPropagation(); act(); }));
 // Ketukan di tempat lain: goyangkan petunjuk supaya jelas apa yang harus diketuk

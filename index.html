@@ -64,7 +64,7 @@
   #scene.at1:not(.d1) #hot1, #scene.at2:not(.d2) #hot2, #scene.at3:not(.d3) #hot3,
   #scene.at4:not(.d4) #hot4, #scene.at5:not(.d5) #hot5, #scene.at6:not(.d6) #hot6,
   #scene.at7:not(.d7) #hot7, #scene.at8:not(.d8) #hot8, #scene.at9:not(.d9) #hot9,
-  #scene.at10:not(.d10) #hot10, #scene.at11:not(.d11) #hot11 {
+  #scene.at10:not(.d10) #hot10, #scene.at11:not(.d11) #hot11, #scene.at12:not(.d12) #hot12 {
     opacity: 1; pointer-events: all; animation: pulse 1.4s ease-out infinite;
   }
   @keyframes pulse { 0% { transform: scale(.85); opacity: 1; } 100% { transform: scale(1.35); opacity: 0; } }
@@ -116,6 +116,10 @@
   #scene.d7 .knob { transform: rotate(-90deg); }
   .prog { transition: fill .3s, font-weight .3s; }
   #scene.d7 .prog-mix { fill: var(--accent); font-weight: 700; }
+  /* 11. Matikan mesin: kenop kembali ke atas (Off), layar mati */
+  #scene.d11 .knob { transform: none; }
+  #scene.d11 .prog-mix { fill: #5B6B7B; font-weight: 400; }
+  #scene.d11 .screen { fill: #3A4652; }
 
   /* 7. Start */
   .startbtn { transition: fill .3s; }
@@ -134,15 +138,15 @@
   #scene.d10 .door { transform: scaleX(.14); transition-delay: 0s; }
   #scene.d10 .clothes-in { opacity: 0; transform: translateX(-40px); transition-delay: .6s; }
   .basket { opacity: 0; transition: opacity .4s; }
-  #scene.at10 .basket, #scene.at11 .basket, #scene.at12 .basket { opacity: 1; }
+  #scene.at10 .basket, #scene.at11 .basket, #scene.at12 .basket, #scene.at13 .basket { opacity: 1; }
   .basket-clothes { opacity: 0; transform: translateY(-30px); transition: opacity .4s, transform .5s; }
   #scene.d10 .basket-clothes { opacity: 1; transform: none; transition-delay: 1s; }
 
   /* 11. Tutup keran */
-  #scene.d11 .lever { transform: none; }
-  #scene.d11 .hose-water { opacity: 0; }
+  #scene.d12 .lever { transform: none; }
+  #scene.d12 .hose-water { opacity: 0; }
   .turn-back { opacity: 0; transition: opacity .3s; }
-  #scene.at11:not(.d11) .turn-back { opacity: 1; }
+  #scene.at12:not(.d12) .turn-back { opacity: 1; }
   @keyframes rise { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: .9; } 100% { opacity: 0; transform: translateY(-50px); } }
 
   @media (prefers-reduced-motion: reduce) {
@@ -197,7 +201,7 @@
       <path class="turn-back" d="M296 100 A47 47 0 0 1 258 138" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
       <path class="turn-back" d="M296 100 A47 47 0 0 1 258 138" fill="none" stroke="#2F6FED" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
       <circle id="hot1" class="hot" cx="250" cy="100" r="38"/>
-      <circle id="hot11" class="hot" cx="250" cy="100" r="38"/>
+      <circle id="hot12" class="hot" cx="250" cy="100" r="38"/>
       <text x="218" y="146" text-anchor="end" font-size="12" fill="#5B6B7B">Keran air</text>
 
       <!-- Mesin cuci -->
@@ -220,6 +224,7 @@
       <!-- Kenop program: hanya label Mix (di kiri) -->
       <g font-size="8" fill="#5B6B7B" dominant-baseline="middle">
         <text class="prog prog-mix" x="463" y="132" text-anchor="end">Mix</text>
+        <text class="prog" x="500" y="95" text-anchor="middle">Off</text>
       </g>
       <circle cx="500" cy="132" r="26" fill="#DDE4EB" stroke="#C9D3DD" stroke-width="2"/>
       <g fill="#9AA8B6">
@@ -233,6 +238,7 @@
         <rect x="497.5" y="116" width="5" height="12" rx="2.5" fill="#2F6FED"/>
       </g>
       <circle id="hot7" class="hot" cx="500" cy="132" r="28"/>
+      <circle id="hot11" class="hot" cx="500" cy="132" r="28"/>
 
       <!-- Layar & tombol -->
       <rect class="screen" x="571" y="103" width="78" height="36" rx="6" fill="#3A4652"/>
@@ -359,13 +365,14 @@ const steps = [
   { title: 'Atur suhu',           desc: 'Tekan Suhu sampai layar menunjukkan -- (air dingin).',        tap: 'Ketuk tombol Suhu' },
   { title: 'Mulai',               desc: 'Tekan tombol biru, lalu tunggu sampai mesin berhenti.',       tap: 'Ketuk tombol biru', busy: 'Mesin sedang mencuci…' },
   { title: 'Keluarkan pakaian',   desc: 'Layar menunjukkan End. Buka pintu dan keluarkan pakaian.',    tap: 'Ketuk pintu mesin' },
+  { title: 'Matikan mesin',       desc: 'Putar tombol bulat kembali ke atas (Off).',                   tap: 'Ketuk tombol bulat' },
   { title: 'Tutup keran',         desc: 'Putar tuas merah kembali ke bawah.',                          tap: 'Ketuk tuas merah' },
 ];
 
 const scene = document.getElementById('scene');
 const $ = id => document.getElementById(id);
 const dispProg = $('dispProg'), dispMain = $('dispMain');
-let cur = 0;      // langkah yang sedang dibuka (0..10), 11 = selesai
+let cur = 0;      // langkah yang sedang dibuka (0..11), 12 = selesai
 let done = 0;     // jumlah langkah yang sudah dilakukan (otomatis lanjut setelah animasi)
 let busy = false;
 let auto = false;   // putar otomatis
@@ -384,6 +391,7 @@ const cams = [
   [[400, 60, 270, 185], [440, 85, 215, 100]],
   [[250, 70, 480, 330], [385, 90, 270, 320]],   // start & pintu
   [[120, 170, 520, 280], [130, 190, 480, 260]],  // keluarkan pakaian
+  [[400, 60, 270, 185], [440, 85, 215, 100]],    // matikan mesin
   [[100, 20, 380, 260], [175, 35, 190, 210]],    // tutup keran
 ];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -455,8 +463,9 @@ function render() {
 }
 
 function updateDisplay() {
-  dispProg.textContent = done >= 7 ? 'MIX' : '';
-  dispMain.textContent = done < 7 ? '' : done < 8 ? '40°' : done < 9 ? '--' : 'End';
+  const on = done >= 7 && done < 11;   // layar menyala dari Mix sampai kenop kembali ke Off
+  dispProg.textContent = on ? 'MIX' : '';
+  dispMain.textContent = !on ? '' : done < 8 ? '40°' : done < 9 ? '--' : 'End';
 }
 
 async function act() {
